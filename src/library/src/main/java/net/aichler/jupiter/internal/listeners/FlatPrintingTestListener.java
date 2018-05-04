@@ -131,10 +131,10 @@ public class FlatPrintingTestListener implements JupiterTestListener {
     private void debugOrInfo(String message) {
 
         if (configuration.getOptions().isVerbose()) {
-            logger.info(message);
+            //logger.info(message);
             return;
         }
-
-        logger.debug(message);
+        return;
+        //logger.debug(message);
     }
 }

@@ -311,7 +311,11 @@ public class Configuration {
 
     private String toName(TestIdentifier identifier) {
 
+        String dName = identifier.getDisplayName();
+
         String name = identifier.getLegacyReportingName();
+        if(!dName.equals(name))
+            name = dName;
         List<Segment> segments = UniqueId.parse(identifier.getUniqueId()).getSegments();
 
         if (!segments.isEmpty()) {

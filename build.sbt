@@ -24,7 +24,7 @@ val Versions = new {
   val testInterface = "1.0"
 }
 
-crossSbtVersions := Vector("0.13.16", "1.0.0")
+crossSbtVersions := Vector("1.0.0","0.13.16")
 
 lazy val library = (project in file("src/library"))
   .settings(
@@ -46,8 +46,7 @@ lazy val library = (project in file("src/library"))
       "junit" % "junit" % "4.12" % Test
     ),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v"),
-    publishMavenStyle := true,
-    bintrayRepository := "maven"
+    publishMavenStyle := true
   )
 
 lazy val plugin = (project in file("src/plugin"))
@@ -55,7 +54,6 @@ lazy val plugin = (project in file("src/plugin"))
   .settings(
     name := "sbt-jupiter-interface",
     sbtPlugin := true,
-    scriptedSettings,
     scriptedBufferLog := false,
     scriptedLaunchOpts ++= Seq(
       s"-Dproject.version=${version.value}",
@@ -70,8 +68,7 @@ lazy val plugin = (project in file("src/plugin"))
     publishMavenStyle := false,
     publishArtifact in Test := false,
     (javacOptions in compile) ++= Seq("-source", "1.6", "-target", "1.6"),
-    (javacOptions in doc) := Seq("-source", "1.6"),
-    bintrayRepository := "sbt-plugins"
+    (javacOptions in doc) := Seq("-source", "1.6")
   )
 
 lazy val root = (project in file("."))
@@ -81,8 +78,7 @@ lazy val root = (project in file("."))
     name := "jupiter-root",
     publish := {},
     publishLocal := {},
-    publishTo := Some(Resolver.file("no-publish", crossTarget.value / "no-publish")),
-    bintrayRelease := {}
+    publishTo := Some(Resolver.file("no-publish", crossTarget.value / "no-publish"))
   )
   .settings(
     inThisBuild(Seq(
@@ -95,11 +91,7 @@ lazy val root = (project in file("."))
           case v if v.startsWith("1.") => "2.12.3"
           case _ => sys.error(s"Unhandled sbt version $sbtCrossVersion")
         }
-      },
-      bintrayOrganization := None,
-      bintrayVcsUrl := Some("git@github.com:maichler/sbt-jupiter-interface.git"),
-      bintrayPackageLabels := Seq("sbt", "junit", "jupiter"),
-      bintrayReleaseOnPublish := false
+      }
     ))
   )
   .settings(
@@ -116,7 +108,6 @@ lazy val root = (project in file("."))
         commitReleaseVersion,
         tagRelease,
         releaseStepCommandAndRemaining("^ releasePublishArtifactsAction"),
-        releaseStepCommandAndRemaining("^ bintrayRelease"),
         setNextVersion,
         commitNextVersion//,
 //        pushChanges

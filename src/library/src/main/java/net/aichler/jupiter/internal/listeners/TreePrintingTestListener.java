@@ -87,7 +87,7 @@ public class TreePrintingTestListener implements JupiterTestListener {
 
         maybeIncreaseIndent(testIdentifier);
 
-        String fqn = colorTheme.info().format(testIdentifier.getDisplayName());
+        String fqn = colorTheme.info().format( testIdentifier.isContainer() || testIdentifier.isTest() ? testIdentifier.getDisplayName(): "--");
         String prefix = testIdentifier.isTest() ? colorTheme.successful().format("+ ") : "";
 
         log(prefix + fqn);
@@ -115,7 +115,8 @@ public class TreePrintingTestListener implements JupiterTestListener {
             case SUCCESSFUL:
                 fqn = identifier.getLegacyReportingName();
                 message = "Test " + fqn + " finished";
-                logger.debug(message);
+                if(!configuration.getOptions().isQuiet())
+                    logger.debug(message);
                 break;
         }
 
