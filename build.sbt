@@ -1,3 +1,5 @@
+import sbt.{Credentials, Path}
+
 /*
  * jupiter-interface
  *
@@ -24,6 +26,8 @@ val Versions = new {
   val testInterface = "1.0"
 }
 
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+
 crossSbtVersions := Vector("1.0.0","0.13.16")
 
 lazy val library = (project in file("src/library"))
@@ -46,7 +50,14 @@ lazy val library = (project in file("src/library"))
       "junit" % "junit" % "4.12" % Test
     ),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v"),
-    publishMavenStyle := true
+    publishMavenStyle := true,
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    publishTo := {
+      if (version.value.trim.endsWith("SNAPSHOT"))
+        Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-snapshot-local")
+      else
+        Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
+    }
   )
 
 lazy val plugin = (project in file("src/plugin"))
@@ -67,6 +78,13 @@ lazy val plugin = (project in file("src/plugin"))
     resourceGenerators in Compile += generateVersionFile.taskValue,
     publishMavenStyle := false,
     publishArtifact in Test := false,
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    publishTo := {
+      if (version.value.trim.endsWith("SNAPSHOT"))
+        Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-snapshot-local")
+      else
+        Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
+    },
     (javacOptions in compile) ++= Seq("-source", "1.6", "-target", "1.6"),
     (javacOptions in doc) := Seq("-source", "1.6")
   )
@@ -76,6 +94,7 @@ lazy val root = (project in file("."))
   .aggregate(plugin)
   .settings(
     name := "jupiter-root",
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     publish := {},
     publishLocal := {},
     publishTo := Some(Resolver.file("no-publish", crossTarget.value / "no-publish"))
@@ -124,4 +143,11 @@ def generateVersionFile = Def.task {
     s"junit.vintage.version=${Versions.junitVintage}\n"
   IO.write(file, content)
   Seq(file)
+}
+
+publishTo := {
+  if (version.value.trim.endsWith("SNAPSHOT"))
+    Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-snapshot-local")
+  else
+    Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
 }

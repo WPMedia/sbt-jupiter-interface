@@ -79,7 +79,7 @@ public class TreePrintingTestListener implements JupiterTestListener {
         String fqn = colorTheme.info().format(testIdentifier.getDisplayName());
         String prefix = testIdentifier.isTest() ? colorTheme.ignoreCount().format("o ") : "";
 
-        log(prefix + fqn);
+        log("skipping" + prefix + fqn);
     }
 
     @Override
@@ -87,9 +87,17 @@ public class TreePrintingTestListener implements JupiterTestListener {
 
         maybeIncreaseIndent(testIdentifier);
 
-        String fqn = colorTheme.info().format( testIdentifier.isContainer() || testIdentifier.isTest() ? testIdentifier.getDisplayName(): "--");
-        String prefix = testIdentifier.isTest() ? colorTheme.successful().format("+ ") : "";
+        boolean itsJunitJupiter = testIdentifier.getDisplayName()
+                                              .equals("JUnit Jupiter") || ( testIdentifier.isContainer() && !testIdentifier.getSource()
+                                                                                                                           .isPresent() && !testIdentifier.getParentId()
+                                                                                                                                                          .isPresent() );
+        String  fqn           = "";
+        if(testIdentifier.isContainer() && !itsJunitJupiter)
+            fqn = colorTheme.container().format(testIdentifier.getDisplayName());
+        else if(testIdentifier.isTest() && !itsJunitJupiter)
+            fqn = colorTheme.info().format(testIdentifier.getDisplayName());
 
+        String  prefix        = testIdentifier.isTest() ? colorTheme.successful().format("+ ") : "";
         log(prefix + fqn);
     }
 
